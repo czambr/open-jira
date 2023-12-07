@@ -69,11 +69,7 @@ export const NewEntry = () => {
                     startIcon={<AddIcon />}
                     fullWidth
                     variant='outlined'
-                    onClick={() => {
-                        console.log('antes');
-                        setIsAddingEntry(true);
-                        console.log('despue');
-                    }}
+                    onClick={() => setIsAddingEntry(true)}
                 >
                     Agregar Tarea
                 </Button>

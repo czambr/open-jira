@@ -14,19 +14,19 @@ const Entries_INITIAL_STATE: EntriesState = {
             _id: uuidv4(),
             description: 'task1',
             status: 'pending',
-            createdAt: Date.now(),
+            createdAt: 1701892330708 - 100,
         },
         {
             _id: uuidv4(),
             description: 'task2',
             status: 'in-progress',
-            createdAt: 123213123123123,
+            createdAt: 1701892331155,
         },
         {
             _id: uuidv4(),
             description: 'task3',
             status: 'finished',
-            createdAt: 151554544555,
+            createdAt: 1701892330708,
         },
     ],
 };
@@ -45,6 +45,10 @@ export const EntriesProvider: FC<PropsWithChildren> = ({ children }) => {
         dispatch({ type: '[Entries] Add-Entry', payload: newEntry });
     };
 
+    const updateEntry = (entry: Entry) => {
+        dispatch({ type: '[Entries] Update', payload: entry });
+    };
+
     return (
         <EntriesContext.Provider
             value={{
@@ -52,6 +56,7 @@ export const EntriesProvider: FC<PropsWithChildren> = ({ children }) => {
 
                 //Methods
                 addNewEntry,
+                updateEntry,
             }}
         >
             {children}
