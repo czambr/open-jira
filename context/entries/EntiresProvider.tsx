@@ -1,53 +1,47 @@
-import { PropsWithChildren, FC, useReducer } from 'react';
-import { v4 as uuidv4 } from 'uuid';
+import { PropsWithChildren, FC, useReducer, useEffect } from 'react';
 
 import { EntriesContext, entriesReducer } from './';
 import { Entry } from '../../interfaces';
+import { entriesAPI } from '../../apis';
 
 export interface EntriesState {
     entries: Entry[];
 }
 
 const Entries_INITIAL_STATE: EntriesState = {
-    entries: [
-        {
-            _id: uuidv4(),
-            description: 'task1',
-            status: 'pending',
-            createdAt: 1701892330708 - 100,
-        },
-        {
-            _id: uuidv4(),
-            description: 'task2',
-            status: 'in-progress',
-            createdAt: 1701892331155,
-        },
-        {
-            _id: uuidv4(),
-            description: 'task3',
-            status: 'finished',
-            createdAt: 1701892330708,
-        },
-    ],
+    entries: [],
 };
 
 export const EntriesProvider: FC<PropsWithChildren> = ({ children }) => {
     const [state, dispatch] = useReducer(entriesReducer, Entries_INITIAL_STATE);
 
-    const addNewEntry = (description: string) => {
-        const newEntry: Entry = {
-            _id: uuidv4(),
-            description,
-            createdAt: Date.now(),
-            status: 'pending',
-        };
-
-        dispatch({ type: '[Entries] Add-Entry', payload: newEntry });
+    const addNewEntry = async (description: string) => {
+        const { data } = await entriesAPI.post<Entry>('/entries', { description });
+        dispatch({ type: '[Entries] Add-Entry', payload: data });
     };
 
-    const updateEntry = (entry: Entry) => {
-        dispatch({ type: '[Entries] Update', payload: entry });
+    const updateEntry = async (entry: Entry) => {
+        try {
+            const { _id, description, status } = entry;
+            const { data } = await entriesAPI.put<Entry>(`/entries/${_id}`, {
+                description,
+                status,
+            });
+
+            dispatch({ type: '[Entries] Update', payload: data });
+        } catch (error) {
+            console.log(error);
+        }
     };
+
+    const refresEntries = async () => {
+        const { data } = await entriesAPI.get<Entry[]>('/entries');
+        dispatch({ type: '[Entries] Refresh-Data', payload: data });
+    };
+
+    useEffect(() => {
+        refresEntries();
+    }, []);
 
     return (
         <EntriesContext.Provider
