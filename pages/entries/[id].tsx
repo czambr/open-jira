@@ -61,7 +61,6 @@ const EntryPage: FC<Props> = ({ entry }) => {
     };
 
     const onDelete = () => {
-        console.log('Delete');
         deleteEntry(entry);
         setTimeout(() => {
             router.push('/');
