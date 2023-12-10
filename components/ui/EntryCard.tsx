@@ -1,14 +1,17 @@
+import { FC, DragEvent, useContext } from 'react';
+import { useRouter } from 'next/router';
 import { Card, CardActionArea, CardActions, CardContent, Typography } from '@mui/material';
 import { Entry } from '../../interfaces';
-import { FC, DragEvent, useContext } from 'react';
 import { UIContext } from '../../context/ui';
+import { dateFunctions } from '../../utils';
 
 interface Props {
     entry: Entry;
 }
 
 export const EntryCard: FC<Props> = ({ entry }) => {
-    const { startDragging, endDragging, isDragging } = useContext(UIContext);
+    const { startDragging, endDragging } = useContext(UIContext);
+    const rotuer = useRouter();
 
     const { createdAt, description } = entry;
 
@@ -23,11 +26,16 @@ export const EntryCard: FC<Props> = ({ entry }) => {
         endDragging();
     };
 
+    const onClick = () => {
+        rotuer.push(`/entries/${entry._id}`);
+    };
+
     return (
         <Card
             sx={{
                 marginBottom: 1,
             }}
+            onClick={onClick}
             // Enventos de drag
             draggable
             onDragStart={onDragStart}
@@ -39,7 +47,9 @@ export const EntryCard: FC<Props> = ({ entry }) => {
                 </CardContent>
 
                 <CardActions sx={{ display: 'flex', justifyContent: 'end', paddingRight: 2 }}>
-                    <Typography variant='body2'>{createdAt}</Typography>
+                    <Typography variant='body2'>
+                        {dateFunctions.getFormatDistanceToNow(createdAt)}
+                    </Typography>
                 </CardActions>
             </CardActionArea>
         </Card>
